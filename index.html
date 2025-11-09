@@ -46,7 +46,7 @@
 
     .sat-images {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 15px;
       justify-items: center;
     }
@@ -56,7 +56,10 @@
       border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease;
-      width: 250px;
+      width: 320px;
+      height: 240px;
+      display: flex;
+      flex-direction: column;
     }
 
     .card:hover {
@@ -65,7 +68,7 @@
 
     .card img {
       width: 100%;
-      height: 180px;
+      height: 100%;
       object-fit: cover;
       display: block;
     }
@@ -76,6 +79,10 @@
       color: #ddd;
       background: rgba(0, 0, 0, 0.5);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     footer {
@@ -97,21 +104,6 @@
   </footer>
 
   <script>
-    // 解析文件名函数，例如：
-    // "2025-11-09_ISS_145.800MHz.jpg" =>
-    // 时间: 2025-11-09, 卫星: ISS, 频率: 145.800MHz
-    function parseImageInfo(filename) {
-      const name = filename.replace(/\.[^/.]+$/, ""); // 去掉扩展名
-      const parts = name.split(/[_-]/); // 按下划线或中划线分割
-      let info = {};
-      if (parts.length >= 2) {
-        info.date = parts[0];
-        info.satellite = parts[1];
-        info.extra = parts.slice(2).join(" ");
-      }
-      return info;
-    }
-
     async function loadGallery() {
       try {
         const resConfig = await fetch('config.json?_=' + Date.now());
@@ -124,23 +116,18 @@
         updateDate.textContent = new Date().toLocaleString();
 
         gallery.innerHTML = config.satellites.map(sat => {
+          // 过滤掉背景图
           const images = (data[sat.id] || []).filter(img => !img.toLowerCase().includes('bg_'));
           return `
             <section class="satellite" style="background-image:url('${sat.bg}')">
               <h2>${sat.display}</h2>
               <div class="sat-images">
-                ${images.map(img => {
-                  const info = parseImageInfo(img);
-                  const captionText = info.date
-                    ? `${info.date} | ${info.satellite || sat.id} ${info.extra || ""}`
-                    : img;
-                  return `
-                    <div class="card">
-                      <img src="images/${sat.id}/${img}" alt="${img}">
-                      <div class="caption">${captionText}</div>
-                    </div>
-                  `;
-                }).join('')}
+                ${images.map(img => `
+                  <div class="card">
+                    <img src="${img}" alt="${img}">
+                    <div class="caption">${img.split('/').pop()}</div>
+                  </div>
+                `).join('')}
               </div>
             </section>
           `;
@@ -149,6 +136,7 @@
         console.error('加载出错:', err);
       }
     }
+
     loadGallery();
   </script>
 </body>
