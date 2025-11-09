@@ -5,6 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BI1UEC 的 SSTV 接收展示</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", sans-serif;
+      background: url("images/bg_galaxy.jpg") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      padding: 20px;
+    }
+
+    section.satellite {
+      background-size: cover;
+      background-position: center;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .satellite h2 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+
+    .sat-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
+      display: block;
+    }
+
+    .caption {
+      font-size: 0.9em;
+      padding: 5px;
+      color: #ddd;
+    }
+
+    footer {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -20,28 +92,35 @@
 
   <script>
     async function loadGallery() {
-      const resConfig = await fetch('config.json?_=' + Date.now());
-      const config = await resConfig.json();
-      const resData = await fetch('images.json?_=' + Date.now());
-      const data = await resData.json();
-      const gallery = document.getElementById('gallery');
-      const updateDate = document.getElementById('update-date');
-      updateDate.textContent = new Date().toLocaleString();
+      try {
+        const resConfig = await fetch('config.json?_=' + Date.now());
+        const config = await resConfig.json();
+        const resData = await fetch('images.json?_=' + Date.now());
+        const data = await resData.json();
 
-      gallery.innerHTML = config.satellites.map(sat => {
-        const images = data[sat.id] || [];
-        return `
-          <section class="satellite" style="background-image:url('${sat.bg}')">
-            <h2>${sat.display}</h2>
-            <div class="sat-images">
-              ${images
-  .filter(img => !img.toLowerCase().includes('bg_')) // 过滤背景图
-  .map(img => `<div class="card"><img src="${img}" alt="${img}"></div>`)
-  .join('')}
-            </div>
-          </section>
-        `;
-      }).join('');
+        const gallery = document.getElementById('gallery');
+        const updateDate = document.getElementById('update-date');
+        updateDate.textContent = new Date().toLocaleString();
+
+        gallery.innerHTML = config.satellites.map(sat => {
+          const images = (data[sat.id] || []).filter(img => !img.toLowerCase().includes('bg_'));
+          return `
+            <section class="satellite" style="background-image:url('${sat.bg}')">
+              <h2>${sat.display}</h2>
+              <div class="sat-images">
+                ${images.map(img => `
+                  <div class="card">
+                    <img src="images/${sat.id}/${img}" alt="${img}">
+                    <div class="caption">${img}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </section>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('加载出错:', err);
+      }
     }
     loadGallery();
   </script>
