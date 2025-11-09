@@ -35,7 +35,8 @@ jobs:
                 else
                   echo "," >> images.json
                 fi
-                echo "    \"${img//\"/\\\"}\"" >> images.json
+                # 使用相对路径，直接可在网页引用
+                echo "    \"${img#./}\"" >> images.json
               done
               echo "  ]" >> images.json
             fi
