@@ -57,9 +57,10 @@
       overflow: hidden;
       transition: transform 0.3s ease;
       width: 320px;
-      height: 240px;
+      /* 总高度固定：图片 + caption */
       display: flex;
       flex-direction: column;
+      cursor: pointer;
     }
 
     .card:hover {
@@ -68,9 +69,11 @@
 
     .card img {
       width: 100%;
-      height: 100%;
+      /* 固定图片高度为 240px */
+      height: 240px;
       object-fit: cover;
       display: block;
+      flex-shrink: 0;
     }
 
     .caption {
@@ -80,14 +83,24 @@
       background: rgba(0, 0, 0, 0.5);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       text-align: center;
-      white-space: nowrap;
+      white-space: normal;
+      word-wrap: break-word;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-height: 2.4em; /* 两行显示 */
+      line-height: 1.2em;
     }
 
     footer {
       background: rgba(0, 0, 0, 0.6);
       padding: 15px;
+    }
+
+    /* 响应式优化：屏幕小于 360px 自动缩小卡片 */
+    @media (max-width: 360px) {
+      .card {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -116,18 +129,20 @@
         updateDate.textContent = new Date().toLocaleString();
 
         gallery.innerHTML = config.satellites.map(sat => {
-          // 过滤掉背景图
           const images = (data[sat.id] || []).filter(img => !img.toLowerCase().includes('bg_'));
           return `
             <section class="satellite" style="background-image:url('${sat.bg}')">
               <h2>${sat.display}</h2>
               <div class="sat-images">
-                ${images.map(img => `
-                  <div class="card">
-                    <img src="${img}" alt="${img}">
-                    <div class="caption">${img.split('/').pop()}</div>
-                  </div>
-                `).join('')}
+                ${images.map(img => {
+                  const fileName = img.split('/').pop().replace(/\.[^/.]+$/, '');
+                  return `
+                    <div class="card" title="${fileName}">
+                      <img src="${img}" alt="${fileName}">
+                      <div class="caption">${fileName}</div>
+                    </div>
+                  `;
+                }).join('')}
               </div>
             </section>
           `;
