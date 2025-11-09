@@ -1,0 +1,7 @@
+{
+  "satellites": [
+    {"id":"ISS", "display":"🛰 ISS", "bg":"images/ISS/bg_iss.jpg"},
+    {"id":"ARCTICSAT-1", "display":"🛰 ARCTICSAT-1", "bg":"images/ARCTICSAT-1/bg_arcticsat1.jpg"},
+    {"id":"UMKA-1", "display":"🛰 UMKA-1", "bg":"images/UMKA-1/bg_umka1.jpg"}
+  ]
+}

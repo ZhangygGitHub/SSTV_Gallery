@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BI1UEC 的 SSTV 接收展示</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📡 BI1UEC 的 SSTV 接收展示</h1>
+    <p>按卫星分类自动展示接收图片</p>
+  </header>
+
+  <main id="gallery"></main>
+
+  <footer>
+    <p>更新日期：<span id="update-date"></span></p>
+  </footer>
+
+  <script>
+    async function loadGallery() {
+      const resConfig = await fetch('config.json?_=' + Date.now());
+      const config = await resConfig.json();
+      const resData = await fetch('images.json?_=' + Date.now());
+      const data = await resData.json();
+      const gallery = document.getElementById('gallery');
+      const updateDate = document.getElementById('update-date');
+      updateDate.textContent = new Date().toLocaleString();
+
+      gallery.innerHTML = config.satellites.map(sat => {
+        const images = data[sat.id] || [];
+        return `
+          <section class="satellite" style="background-image:url('${sat.bg}')">
+            <h2>${sat.display}</h2>
+            <div class="sat-images">
+              ${images.map(img => `<div class="card"><img src="${img}" alt="${img}"></div>`).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+    }
+    loadGallery();
+  </script>
+</body>
+</html>
