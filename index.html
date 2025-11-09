@@ -57,7 +57,6 @@
       overflow: hidden;
       transition: transform 0.3s ease;
       width: 320px;
-      /* 总高度固定：图片 + caption */
       display: flex;
       flex-direction: column;
       cursor: pointer;
@@ -69,10 +68,8 @@
 
     .card img {
       width: 100%;
-      /* 固定图片高度为 240px */
       height: 240px;
       object-fit: cover;
-      display: block;
       flex-shrink: 0;
     }
 
@@ -83,12 +80,15 @@
       background: rgba(0, 0, 0, 0.5);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       text-align: center;
-      white-space: normal;
-      word-wrap: break-word;
+      white-space: normal;        /* 自动换行 */
+      word-wrap: break-word;      /* 长单词换行 */
       overflow: hidden;
-      text-overflow: ellipsis;
-      max-height: 2.4em; /* 两行显示 */
+      text-overflow: ellipsis;    /* 超过两行显示省略号 */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;      /* 最多两行 */
+      -webkit-box-orient: vertical;
       line-height: 1.2em;
+      max-height: 2.4em;
     }
 
     footer {
@@ -96,7 +96,6 @@
       padding: 15px;
     }
 
-    /* 响应式优化：屏幕小于 360px 自动缩小卡片 */
     @media (max-width: 360px) {
       .card {
         width: 100%;
@@ -135,9 +134,10 @@
               <h2>${sat.display}</h2>
               <div class="sat-images">
                 ${images.map(img => {
+                  // 获取文件名并去掉扩展名
                   const fileName = img.split('/').pop().replace(/\.[^/.]+$/, '');
                   return `
-                    <div class="card" title="${fileName}">
+                    <div class="card">
                       <img src="${img}" alt="${fileName}">
                       <div class="caption">${fileName}</div>
                     </div>
