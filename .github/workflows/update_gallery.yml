@@ -16,7 +16,7 @@ jobs:
 
       - name: Generate images.json
         run: |
-          echo "[" > images.json
+          echo "{" > images.json
           first=true
           for dir in images/*/ ; do
             sat=$(basename "$dir")
@@ -26,7 +26,7 @@ jobs:
               else
                 echo "," >> images.json
               fi
-              echo "  {\"satellite\": \"$sat\", \"images\": [" >> images.json
+              echo "  \"$sat\": [" >> images.json
               first_img=true
               for img in $dir*.jpg $dir*.png $dir*.jpeg; do
                 [ -e "$img" ] || continue
@@ -37,10 +37,10 @@ jobs:
                 fi
                 echo "    \"${img//\"/\\\"}\"" >> images.json
               done
-              echo "  ]}" >> images.json
+              echo "  ]" >> images.json
             fi
           done
-          echo "]" >> images.json
+          echo "}" >> images.json
 
       - name: Commit changes
         run: |
