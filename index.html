@@ -34,7 +34,10 @@
           <section class="satellite" style="background-image:url('${sat.bg}')">
             <h2>${sat.display}</h2>
             <div class="sat-images">
-              ${images.map(img => `<div class="card"><img src="${img}" alt="${img}"></div>`).join('')}
+              ${images
+  .filter(img => !img.toLowerCase().includes('bg_')) // 过滤背景图
+  .map(img => `<div class="card"><img src="${img}" alt="${img}"></div>`)
+  .join('')}
             </div>
           </section>
         `;
